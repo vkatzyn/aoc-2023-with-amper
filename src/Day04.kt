@@ -1,34 +1,32 @@
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 fun main() {
-    data class Card(val winningNumbers: List<String>, val myNumbers: List<String>, var amount: Int)
 
-    fun getCards(input: List<String>) = input.map {
-        val nums = it.split(':')[1].trim().split('|')
-        Card(nums[0].trim().split(' '),
-                nums[1].trim().split(' ').filter { num -> num.isNotEmpty() },
-                1)
+    data class Card(val winningNumbers: List<String>,
+                    val myNumbers: List<String>,
+                    val winningNumbersCount: Int = myNumbers.count { it in winningNumbers },
+                    var amount: Int = 1)
+
+    fun getCards(input: List<String>) = input.map { line ->
+        val (winningNumbers, myNumbers) = line
+                .split(':')[1].trim()
+                .split('|')
+                .map { it.trim().split(' ').filter(String::isNotEmpty) }
+        Card(winningNumbers, myNumbers)
     }
 
-    fun Card.getWinningNumbersCount() = myNumbers.filter { num -> num in winningNumbers }.count()
-
     fun part1(input: List<String>): Int {
-        val cards = getCards(input)
-        return cards.sumOf {
-            2.0.pow(it.getWinningNumbersCount() - 1).toInt()
-        }
+        return getCards(input).sumOf { 2.0.pow(it.winningNumbersCount - 1).toInt() }
     }
 
     fun part2(input: List<String>): Int {
         val cards = getCards(input)
+        var result = 0
         cards.forEachIndexed { index, card ->
-            val winningNumbersCount = card.getWinningNumbersCount()
-            for (i in index + 1..index + winningNumbersCount) {
-                cards[i].amount += card.amount
-            }
+            result += card.amount
+            for (i in index + 1..index + card.winningNumbersCount) cards[i].amount += card.amount
         }
-        return cards.sumOf { it.amount }
+        return result
     }
 
     val testInput = readInput("Day04_test")
