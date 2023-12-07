@@ -14,7 +14,7 @@ fun main() {
     fun part2(input: List<String>): Long {
         val (time, distance) = input.map { line -> line.filter { it.isDigit() }.toLong() }
         val minHold = (0..time).find { it * (time - it) > distance }
-        return minHold?.let { (time - minHold * 2 + 1) } ?: 0
+        return (minHold?.let { (time - minHold * 2 + 1) }) ?: 0
     }
 
     val testInput = readInput("Day06_test")
