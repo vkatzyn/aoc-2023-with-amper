@@ -1,22 +1,13 @@
 fun main() {
 
     fun findNextValue(values: List<Int>): Int {
-        var nextValue = values.last()
-        var allZeroes = false
-        var currentSequence = mutableListOf<Int>()
-        currentSequence.addAll(values)
-        while (!allZeroes) {
-            val sequenceOfDifferences = mutableListOf<Int>()
-            for (i in 1..currentSequence.indices.last) {
-                sequenceOfDifferences.add(currentSequence[i] - currentSequence[i - 1])
-            }
-            nextValue += sequenceOfDifferences[sequenceOfDifferences.lastIndex]
-            allZeroes = sequenceOfDifferences.all { it == 0 }
-            currentSequence = sequenceOfDifferences
-        }
-        return nextValue
+        val differenceSequences =
+                generateSequence(values) {
+                    it.windowed(2) { (a, b) -> b - a }
+                }.takeWhile { it.any { value -> value != 0 } }
+        return differenceSequences.sumOf { it.last() }
     }
-    
+
     fun part1(input: List<String>): Int {
         return input.sumOf { line ->
             val values = line.split(' ').map { it.toInt() }
